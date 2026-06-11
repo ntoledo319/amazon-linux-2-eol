@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate</title>
+<meta name="description" content="Amazon Linux 2 reaches end of life on June 30, 2026. Paste your Dockerfile or os-release to instantly check what breaks, see AL2 vs AL2023 differences, and follow a migration checklist to Amazon Linux 2023.">
+<link rel="canonical" href="https://ntoledo319.github.io/amazon-linux-2-eol/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate">
+<meta property="og:description" content="Amazon Linux 2 reaches end of life on June 30, 2026. Instantly check what breaks in your build and follow a migration checklist to Amazon Linux 2023.">
+<meta property="og:url" content="https://ntoledo319.github.io/amazon-linux-2-eol/">
+<meta property="og:site_name" content="EOLkits">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Amazon Linux 2 End of Life: June 30, 2026">
+<meta name="twitter:description" content="Instantly check what breaks in your build and follow a migration checklist to Amazon Linux 2023.">
+<meta name="robots" content="index, follow">
+<style>
+:root{
+  --bg:#f6f8fa;--card:#ffffff;--ink:#1b1f24;--muted:#57606a;--line:#d8dee4;
+  --accent:#0b5fff;--accent-ink:#fff;--warn-bg:#fff8e6;--warn-line:#e6c200;
+  --bad-bg:#fff0f0;--bad-line:#d1242f;--ok-bg:#eefbf2;--ok-line:#1a7f37;--code:#f0f2f5;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.2px}
+.brand span{color:var(--muted);font-weight:500}
+nav a{margin-left:16px;color:var(--muted);font-size:14px}
+h1{font-size:30px;line-height:1.25;margin:28px 0 10px}
+h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:22px 0 6px}
+p{margin:10px 0}
+.lede{font-size:18px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:18px 0}
+.countdown{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0}
+.cd-unit{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:84px;text-align:center}
+.cd-num{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.cd-lab{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+textarea{width:100%;min-height:200px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  border:1px solid var(--line);border-radius:8px;padding:12px;resize:vertical;background:var(--code);color:var(--ink)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+button{font:inherit;font-weight:600;border-radius:8px;border:1px solid var(--line);padding:10px 18px;cursor:pointer;background:var(--card);color:var(--ink)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:hover{filter:brightness(.97)}
+.privacy{font-size:13px;color:var(--muted)}
+#results{margin-top:16px}
+.finding{border:1px solid var(--line);border-left-width:5px;border-radius:8px;padding:12px 14px;margin:10px 0;background:var(--card)}
+.finding.bad{border-left-color:var(--bad-line);background:var(--bad-bg)}
+.finding.warn{border-left-color:var(--warn-line);background:var(--warn-bg)}
+.finding.clean{border-left-color:var(--ok-line);background:var(--ok-bg)}
+.finding h4{margin:0 0 4px;font-size:15px}
+.finding code,code{background:var(--code);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.finding .why{margin:6px 0 2px}
+.finding .fix{margin:2px 0 0}
+.finding .lineref{font-size:12px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--code)}
+ol li,ul li{margin:6px 0}
+.faq h3{margin-bottom:2px}
+.cta-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:680px){.cta-grid{grid-template-columns:1fr 1fr 1fr}}
+.cta{display:block;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--card);color:var(--ink)}
+.cta:hover{text-decoration:none;border-color:var(--accent)}
+.cta b{display:block;margin-bottom:4px}
+.cta span{font-size:13px;color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var(--muted);font-size:14px}
+.tag{font-size:12px;font-weight:600;padding:2px 7px;border-radius:5px}
+.tag.bad{background:var(--bad-bg);color:var(--bad-line);border:1px solid var(--bad-line)}
+.tag.warn{background:var(--warn-bg);color:#8a6d00;border:1px solid var(--warn-line)}
+</style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {"@type":"Question","name":"When does Amazon Linux 2 reach end of life?","acceptedAnswer":{"@type":"Answer","text":"Amazon Linux 2 reaches end of support on June 30, 2026. After that date AWS no longer provides security updates, bug fixes, or new packages for AL2."}},
+    {"@type":"Question","name":"What happens to my instances after Amazon Linux 2 EOL?","acceptedAnswer":{"@type":"Answer","text":"Existing EC2 instances keep running, but they stop receiving security patches and bug fixes. AWS also deprecates the AL2-based ECS and EKS optimized AMIs, so managed node groups and ECS-optimized launches should move to AL2023 AMIs."}},
+    {"@type":"Question","name":"Can I upgrade Amazon Linux 2 to Amazon Linux 2023 in place?","acceptedAnswer":{"@type":"Answer","text":"No. AL2023 is a new major release and there is no supported in-place upgrade path. You launch new AL2023 instances or rebuild your images on AL2023 and migrate your workload."}},
+    {"@type":"Question","name":"What is the biggest breaking change moving from AL2 to AL2023?","acceptedAnswer":{"@type":"Answer","text":"The package manager changes from yum to dnf, amazon-linux-extras is removed, Python 2 is gone, and AL2023 uses deterministic versioned repositories instead of the AL2 rolling repository. Scripts that call yum, amazon-linux-extras, or /usr/bin/python expecting Python 2 will break."}},
+    {"@type":"Question","name":"Is Amazon Linux 2023 free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Like Amazon Linux 2, AL2023 is provided at no additional cost beyond the underlying compute resources, and each AL2023 release receives five years of support."}}
+  ]
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">Amazon Linux 2 EOL <span>· EOLkits</span></div>
+    <nav>
+      <a href="#check">Checker</a>
+      <a href="#diff">AL2 vs AL2023</a>
+      <a href="#migrate">Migrate</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <span class="pill" style="margin-top:24px">End of support: 2026-06-30</span>
+  <h1>Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate</h1>
+  <p class="lede">Amazon Linux 2 stops receiving security updates and bug fixes on June 30, 2026. This guide explains what actually breaks, lets you check your own build configuration in the browser, and walks through migrating to Amazon Linux 2023.</p>
+
+  <div class="countdown" id="countdown" aria-label="Countdown to Amazon Linux 2 end of life">
+    <div class="cd-unit"><div class="cd-num" id="cd-d">--</div><div class="cd-lab">Days</div></div>
+    <div class="cd-unit"><div class="cd-num" id="cd-h">--</div><div class="cd-lab">Hours</div></div>
+    <div class="cd-unit"><div class="cd-num" id="cd-m">--</div><div class="cd-lab">Minutes</div></div>
+    <div class="cd-unit"><div class="cd-num" id="cd-s">--</div><div class="cd-lab">Seconds</div></div>
+  </div>
+
+  <section id="check">
+    <h2>Instant compatibility checker</h2>
+    <p>Paste a Dockerfile, an <code>/etc/os-release</code> file, a Packer or Terraform snippet, EC2 user data, or any <code>yum</code>-based provisioning script. The checker flags patterns that break on Amazon Linux 2023 and explains what to change.</p>
+    <div class="card">
+      <textarea id="input" spellcheck="false" placeholder="FROM amazonlinux:2&#10;RUN amazon-linux-extras install nginx1 -y&#10;RUN yum install -y python2 ntp iptables-services"></textarea>
+      <div class="btnrow">
+        <button class="primary" id="run">Check for AL2 dependencies</button>
+        <button id="sample">Load sample Dockerfile</button>
+        <button id="clear">Clear</button>
+        <span class="privacy">Your input never leaves your browser. The scan runs entirely in client-side JavaScript with no network calls.</span>
+      </div>
+      <div id="results"></div>
+    </div>
+  </section>
+
+  <section id="meaning">
+    <h2>What end of life actually means</h2>
+    <p>End of support (EOS) on June 30, 2026 is the date AWS stops shipping updates for Amazon Linux 2. Concretely:</p>
+    <ul>
+      <li><b>No more security patches.</b> The core repository stops receiving CVE fixes and bug fixes. Any new vulnerability discovered after that date goes unpatched on AL2.</li>
+      <li><b>AMI deprecation.</b> AWS deprecates the AL2-based Amazon ECS-optimized and Amazon EKS-optimized AMIs. Managed node groups and ECS capacity providers that still reference AL2 AMIs should be moved to AL2023 AMIs before the deadline.</li>
+      <li><b>Existing instances keep running.</b> EOL does not shut anything down. Your running EC2 instances continue to operate, but they become progressively riskier to keep online because the OS is frozen at its last patch level.</li>
+      <li><b>No in-place upgrade.</b> There is no supported command to convert an AL2 host into AL2023. Migration means launching or building fresh AL2023 images.</li>
+    </ul>
+  </section>
+
+  <section id="diff">
+    <h2>Amazon Linux 2 vs Amazon Linux 2023: key differences</h2>
+    <p>These are the changes most likely to break automation, container images, and provisioning scripts.</p>
+    <table>
+      <thead><tr><th>Area</th><th>Amazon Linux 2</th><th>Amazon Linux 2023</th><th>What it means for you</th></tr></thead>
+      <tbody>
+        <tr><td>Package manager</td><td><code>yum</code></td><td><code>dnf</code> (a <code>yum</code> shim exists but is deprecated)</td><td>Prefer <code>dnf</code> in scripts. <code>yum</code> still resolves to dnf, but rely on dnf semantics.</td></tr>
+        <tr><td>Extra packages</td><td><code>amazon-linux-extras</code> topics</td><td>Removed</td><td>Packages such as nginx, PostgreSQL, and others are installed directly with <code>dnf install</code>, no extras enable step.</td></tr>
+        <tr><td>Repositories</td><td>Single rolling repo, latest always</td><td>Deterministic, version-locked repos (<code>releasever</code>)</td><td>Updates are opt-in and reproducible. Builds pin a specific version instead of always pulling latest.</td></tr>
+        <tr><td>Python</td><td>Python 2.7 present; <code>/usr/bin/python</code> often Python 2</td><td>Python 2 removed; Python 3 only (3.9)</td><td>Anything invoking <code>python</code>/<code>python2</code> or relying on the Python 2 interpreter must move to Python 3.</td></tr>
+        <tr><td>Time sync</td><td>historically ntpd-based tooling</td><td>chrony (with Amazon Time Sync)</td><td>Remove <code>ntp</code>/<code>ntpd</code> packages and config; use chrony.</td></tr>
+        <tr><td>Firewall</td><td>legacy iptables</td><td>nftables backend (<code>iptables-nft</code>)</td><td>Raw iptables rule scripts and <code>iptables-services</code> assumptions should be reviewed against nftables.</td></tr>
+        <tr><td>Control groups</td><td>cgroup v1</td><td>cgroup v2 (unified hierarchy)</td><td>Container runtimes and resource-limit tooling must support cgroup v2.</td></tr>
+        <tr><td>Scheduled tasks</td><td><code>cron</code></td><td><code>systemd</code> timers (cron still available)</td><td>Review crontab-based provisioning; systemd timers are the documented approach.</td></tr>
+        <tr><td>Init logging</td><td><code>rsyslog</code></td><td><code>systemd</code> journal</td><td>Log shippers reading <code>/var/log/messages</code> may need to read the journal instead.</td></tr>
+        <tr><td>SELinux</td><td>permissive / not enforced by default</td><td>Available and can be enforced</td><td>Workloads should be tested under SELinux policies.</td></tr>
+        <tr><td>Instance metadata</td><td>IMDSv1 commonly used</td><td>AL2023 AMIs default to IMDSv2-only</td><td>Code reading instance metadata must use the IMDSv2 token flow.</td></tr>
+        <tr><td>Base OS image tag</td><td><code>amazonlinux:2</code></td><td><code>amazonlinux:2023</code></td><td>Update container base images and any AMI lookups that match <code>amzn2</code>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="migrate">
+    <h2>Migration checklist: AL2 to AL2023</h2>
+    <ol>
+      <li><b>Inventory where AL2 is used.</b> Container base images (<code>FROM amazonlinux:2</code>), EC2 launch templates and AMI IDs, EKS/ECS node AMIs, Packer templates, and Terraform AMI data sources.</li>
+      <li><b>Run the checker above</b> against each Dockerfile, user-data script, and provisioning playbook to surface the concrete breaking patterns.</li>
+      <li><b>Switch package commands</b> from <code>yum</code> to <code>dnf</code> and replace every <code>amazon-linux-extras install X</code> with a direct <code>dnf install X</code>.</li>
+      <li><b>Remove Python 2 dependencies.</b> Repoint scripts to <code>python3</code> and verify any tooling that assumed <code>/usr/bin/python</code> was Python 2.</li>
+      <li><b>Pin a releasever.</b> Adopt the deterministic repository model so builds are reproducible instead of relying on a rolling latest.</li>
+      <li><b>Update base images and AMIs.</b> Move container images to <code>amazonlinux:2023</code> and switch launch templates / node groups to AL2023 AMIs.</li>
+      <li><b>Validate runtime assumptions.</b> Confirm cgroup v2, IMDSv2 token usage, chrony for time sync, and nftables-compatible firewall rules.</li>
+      <li><b>Test, then cut over.</b> Build the AL2023 image, run your full test suite, deploy to a canary, then roll out before June 30, 2026.</li>
+    </ol>
+    <div class="card">
+      <h3>Automate the inventory</h3>
+      <p>The open-source <a href="https://github.com/ntoledo319/EOLkits">EOLkits CLI</a> runs the same checks across an entire repository or image set, so you do not have to paste files one at a time.</p>
+    </div>
+  </section>
+
+  <section id="cta">
+    <h2>Next steps</h2>
+    <div class="cta-grid">
+      <a class="cta" href="https://github.com/ntoledo319/EOLkits"><b>Free open-source CLI</b><span>Scan repos and images for AL2 dependencies automatically.</span></a>
+      <a class="cta" href="https://eolkits.com/audit"><b>Migration audit</b><span>A done-for-you review of your AL2 footprint and migration plan.</span></a>
+      <a class="cta" href="https://eolkits.com/deprecations.ics"><b>Deadline calendar feed</b><span>Subscribe to an .ics feed of upcoming OS and runtime deprecations.</span></a>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2>Frequently asked questions</h2>
+    <h3>When does Amazon Linux 2 reach end of life?</h3>
+    <p>June 30, 2026. After that date AWS no longer provides security updates, bug fixes, or new packages for Amazon Linux 2.</p>
+    <h3>What happens to my instances after the EOL date?</h3>
+    <p>Running EC2 instances continue to operate, but they stop receiving patches. AWS also deprecates the AL2-based ECS-optimized and EKS-optimized AMIs, so managed compute should move to AL2023 AMIs.</p>
+    <h3>Can I upgrade AL2 to AL2023 in place?</h3>
+    <p>No. AL2023 is a new major release with no supported in-place upgrade. You launch new AL2023 instances or rebuild your images on AL2023.</p>
+    <h3>What is the biggest breaking change?</h3>
+    <p>The move from <code>yum</code> to <code>dnf</code>, the removal of <code>amazon-linux-extras</code>, the removal of Python 2, and deterministic version-locked repositories replacing the AL2 rolling repository.</p>
+    <h3>Is Amazon Linux 2023 free, and how long is it supported?</h3>
+    <p>Yes, AL2023 is provided at no additional cost beyond compute, and each AL2023 release receives five years of support.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Maintained by <a href="https://eolkits.com">Toledo Technologies LLC</a>. This guide is informational; verify dates and behavior against current AWS documentation before migrating.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Countdown to AL2 EOL
+  var target = Date.UTC(2026,5,30,0,0,0); // 2026-06-30T00:00:00Z
+  var el={d:document.getElementById('cd-d'),h:document.getElementById('cd-h'),m:document.getElementById('cd-m'),s:document.getElementById('cd-s')};
+  function pad(n){return (n<10?'0':'')+n;}
+  function tick(){
+    var diff=target-Date.now();
+    if(diff<=0){
+      el.d.textContent='0';el.h.textContent='00';el.m.textContent='00';el.s.textContent='00';
+      var c=document.getElementById('countdown');
+      if(c && !c.dataset.done){c.dataset.done='1';
+        var note=document.createElement('div');note.className='cd-unit';note.style.minWidth='auto';
+        note.innerHTML='<div class="cd-num" style="font-size:18px">Past EOL</div><div class="cd-lab">No more patches</div>';
+        c.appendChild(note);}
+      return;
+    }
+    var dd=Math.floor(diff/86400000);
+    var hh=Math.floor(diff%86400000/3600000);
+    var mm=Math.floor(diff%3600000/60000);
+    var ss=Math.floor(diff%60000/1000);
+    el.d.textContent=dd;el.h.textContent=pad(hh);el.m.textContent=pad(mm);el.s.textContent=pad(ss);
+  }
+  tick();setInterval(tick,1000);
+
+  // Checker rules. Each rule: id, test(line)->bool, severity, title, why, fix.
+  var rules=[
+    {id:'from2',sev:'bad',
+      test:function(l){return /^\s*FROM\s+(public\.ecr\.aws\/amazonlinux\/)?amazonlinux:2(\s|$|@)/i.test(l) || /amazonlinux:2\.0/i.test(l);},
+      title:'Base image FROM amazonlinux:2',
+      why:'This pins the container to the Amazon Linux 2 base image, which stops receiving security updates after June 30, 2026.',
+      fix:'Change the base image tag to amazonlinux:2023.'},
+    {id:'amzn2name',sev:'warn',
+      test:function(l){return /amzn2(?!023)/i.test(l) || /\bamzn2-ami/i.test(l) || /amzn2\.0/i.test(l);},
+      title:'amzn2 AMI name or SSM path',
+      why:'AMI name filters or SSM parameter paths matching amzn2 resolve to Amazon Linux 2 images that are being deprecated.',
+      fix:'Update the filter or SSM parameter to the AL2023 path (al2023-ami-* / /aws/service/ami-amazon-linux-latest/al2023-...).'},
+    {id:'extras',sev:'bad',
+      test:function(l){return /amazon-linux-extras/i.test(l);},
+      title:'amazon-linux-extras used',
+      why:'amazon-linux-extras does not exist on AL2023; the extras topic model was removed.',
+      fix:'Install the package directly with dnf install <package> (no extras enable step).'},
+    {id:'yum',sev:'warn',
+      test:function(l){return /(^|\s|&&|;|\|)yum\s+(install|update|groupinstall|erase|remove|makecache|clean|list|search|info|provides|history|repolist|-y)/i.test(l);},
+      title:'yum command',
+      why:'AL2023 uses dnf. A yum compatibility shim exists but is deprecated and may behave differently.',
+      fix:'Replace yum with dnf in build and provisioning scripts.'},
+    {id:'py2',sev:'bad',
+      test:function(l){return /\bpython2(\.\d+)?\b/i.test(l) || /\/usr\/bin\/python(?![3\w.])/.test(l) || /\bpython-pip\b/i.test(l);},
+      title:'Python 2 dependency',
+      why:'Python 2 is removed from AL2023, and /usr/bin/python is not Python 2. Scripts expecting Python 2 will fail.',
+      fix:'Port to Python 3 and call python3 explicitly.'},
+    {id:'ntp',sev:'warn',
+      test:function(l){return /\bntpd\b/i.test(l) || /(^|\s)ntp(\s|$)/i.test(l) || /\bntp\.conf\b/i.test(l);},
+      title:'ntpd / ntp time sync',
+      why:'AL2023 uses chrony with the Amazon Time Sync Service rather than the ntp daemon.',
+      fix:'Remove the ntp package and configure chrony instead.'},
+    {id:'iptables',sev:'warn',
+      test:function(l){return /\biptables(-services|-restore|-save)?\b/i.test(l);},
+      title:'iptables usage',
+      why:'AL2023 uses the nftables backend (iptables-nft). Legacy iptables-services assumptions may not apply.',
+      fix:'Review firewall rules against nftables / iptables-nft on AL2023.'},
+    {id:'prettyname',sev:'bad',
+      test:function(l){return /PRETTY_NAME\s*=\s*"Amazon Linux 2"\s*$/i.test(l) || /\bVERSION_ID\s*=\s*"?2"\s*$/i.test(l) || /\bVERSION_ID\s*=\s*2\s*$/i.test(l);},
+      title:'os-release reports Amazon Linux 2',
+      why:'The /etc/os-release shows this host is running Amazon Linux 2, which goes end of life on June 30, 2026.',
+      fix:'Rebuild or relaunch on Amazon Linux 2023 (PRETTY_NAME "Amazon Linux 2023").'}
+  ];
+
+  function escapeHtml(s){return s.replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  function scan(text){
+    var lines=text.split(/\r?\n/);
+    var found=[]; // {rule, line, lineNo}
+    for(var i=0;i<lines.length;i++){
+      var line=lines[i];
+      if(/^\s*#/.test(line)) continue; // skip comment lines
+      for(var r=0;r<rules.length;r++){
+        if(rules[r].test(line)){
+          found.push({rule:rules[r],line:line.trim(),lineNo:i+1});
+        }
+      }
+    }
+    return found;
+  }
+
+  function render(found,hadInput){
+    var box=document.getElementById('results');
+    if(!hadInput){box.innerHTML='<div class="finding warn"><h4>Nothing to scan</h4><p class="why">Paste a Dockerfile, os-release, or provisioning script above and run the check.</p></div>';return;}
+    if(found.length===0){
+      box.innerHTML='<div class="finding clean"><h4>No Amazon Linux 2 dependencies detected</h4>'+
+        '<p class="why">None of the known AL2 breaking patterns were found in this input. This is a heuristic scan, so still validate on a real AL2023 build before the June 30, 2026 deadline.</p></div>';
+      return;
+    }
+    // de-duplicate by ruleid+line
+    var seen={},items=[];
+    for(var i=0;i<found.length;i++){
+      var k=found[i].rule.id+'@'+found[i].lineNo;
+      if(seen[k])continue;seen[k]=1;items.push(found[i]);
+    }
+    var bad=items.filter(function(x){return x.rule.sev==='bad';}).length;
+    var warn=items.length-bad;
+    var head='<div class="finding '+(bad?'bad':'warn')+'"><h4>'+items.length+' potential issue'+(items.length===1?'':'s')+' found</h4>'+
+      '<p class="why"><span class="tag bad">'+bad+' breaking</span> &nbsp; <span class="tag warn">'+warn+' review</span></p></div>';
+    var body=items.map(function(x){
+      return '<div class="finding '+x.rule.sev+'">'+
+        '<h4>'+escapeHtml(x.rule.title)+' <span class="lineref">(line '+x.lineNo+')</span></h4>'+
+        '<div class="lineref"><code>'+escapeHtml(x.line)+'</code></div>'+
+        '<p class="why"><b>Why it breaks on AL2023:</b> '+escapeHtml(x.rule.why)+'</p>'+
+        '<p class="fix"><b>What to change:</b> '+escapeHtml(x.rule.fix)+'</p>'+
+      '</div>';
+    }).join('');
+    box.innerHTML=head+body;
+  }
+
+  var sampleDockerfile='FROM amazonlinux:2\n'+
+    'RUN yum update -y && \\\n'+
+    '    amazon-linux-extras install nginx1 -y && \\\n'+
+    '    yum install -y python2 python-pip ntp iptables-services\n'+
+    'COPY app /opt/app\n'+
+    'CMD ["/usr/bin/python","/opt/app/run.py"]\n';
+
+  document.getElementById('run').addEventListener('click',function(){
+    var t=document.getElementById('input').value;
+    render(scan(t),t.trim().length>0);
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  document.getElementById('sample').addEventListener('click',function(){
+    document.getElementById('input').value=sampleDockerfile;
+  });
+  document.getElementById('clear').addEventListener('click',function(){
+    document.getElementById('input').value='';
+    document.getElementById('results').innerHTML='';
+  });
+
+  // Expose for offline test harness
+  window.__al2scan=function(t){return scan(t);};
+})();
+</script>
+</body>
+</html>
