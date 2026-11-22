@@ -5,16 +5,16 @@
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate</title>
-<meta name="description" content="Amazon Linux 2 reaches end of life on June 30, 2026. Paste your Dockerfile or os-release to instantly check what breaks, see AL2 vs AL2023 differences, and follow a migration checklist to Amazon Linux 2023.">
-<link rel="canonical" href="https://ntoledo319.github.io/amazon-linux-2-eol/">
+<title>Amazon Linux 2 End of Life (June 30, 2026): What Breaks and How to Migrate</title>
+<meta name="description" content="Amazon Linux 2 reached end of support on June 30, 2026. Paste your Dockerfile or os-release to check what breaks, see AL2 vs AL2023 differences, and follow a migration checklist to Amazon Linux 2023.">
+<link rel="canonical" href="https://eolkits.com/amazon-linux-2-eol-checklist/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate">
-<meta property="og:description" content="Amazon Linux 2 reaches end of life on June 30, 2026. Instantly check what breaks in your build and follow a migration checklist to Amazon Linux 2023.">
+<meta property="og:title" content="Amazon Linux 2 End of Life (June 30, 2026): What Breaks and How to Migrate">
+<meta property="og:description" content="Amazon Linux 2 reached end of support on June 30, 2026. Check what breaks in your build and follow a migration checklist to Amazon Linux 2023.">
 <meta property="og:url" content="https://ntoledo319.github.io/amazon-linux-2-eol/">
 <meta property="og:site_name" content="EOLkits">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Amazon Linux 2 End of Life: June 30, 2026">
+<meta name="twitter:title" content="Amazon Linux 2 End of Life (June 30, 2026)">
 <meta name="twitter:description" content="Instantly check what breaks in your build and follow a migration checklist to Amazon Linux 2023.">
 <meta name="robots" content="index, follow">
 <style>
@@ -84,7 +84,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
   "@context":"https://schema.org",
   "@type":"FAQPage",
   "mainEntity":[
-    {"@type":"Question","name":"When does Amazon Linux 2 reach end of life?","acceptedAnswer":{"@type":"Answer","text":"Amazon Linux 2 reaches end of support on June 30, 2026. After that date AWS no longer provides security updates, bug fixes, or new packages for AL2."}},
+    {"@type":"Question","name":"When did Amazon Linux 2 reach end of life?","acceptedAnswer":{"@type":"Answer","text":"Amazon Linux 2 reached end of support on June 30, 2026. Since that date AWS no longer provides standard security updates, bug fixes, or new packages for AL2."}},
     {"@type":"Question","name":"What happens to my instances after Amazon Linux 2 EOL?","acceptedAnswer":{"@type":"Answer","text":"Existing EC2 instances keep running, but they stop receiving security patches and bug fixes. AWS also deprecates the AL2-based ECS and EKS optimized AMIs, so managed node groups and ECS-optimized launches should move to AL2023 AMIs."}},
     {"@type":"Question","name":"Can I upgrade Amazon Linux 2 to Amazon Linux 2023 in place?","acceptedAnswer":{"@type":"Answer","text":"No. AL2023 is a new major release and there is no supported in-place upgrade path. You launch new AL2023 instances or rebuild your images on AL2023 and migrate your workload."}},
     {"@type":"Question","name":"What is the biggest breaking change moving from AL2 to AL2023?","acceptedAnswer":{"@type":"Answer","text":"The package manager changes from yum to dnf, amazon-linux-extras is removed, Python 2 is gone, and AL2023 uses deterministic versioned repositories instead of the AL2 rolling repository. Scripts that call yum, amazon-linux-extras, or /usr/bin/python expecting Python 2 will break."}},
@@ -108,8 +108,8 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
 
 <main class="wrap">
   <span class="pill" style="margin-top:24px">End of support: 2026-06-30</span>
-  <h1>Amazon Linux 2 End of Life: June 30, 2026 — What Breaks and How to Migrate</h1>
-  <p class="lede">Amazon Linux 2 stops receiving security updates and bug fixes on June 30, 2026. This guide explains what actually breaks, lets you check your own build configuration in the browser, and walks through migrating to Amazon Linux 2023.</p>
+  <h1>Amazon Linux 2 End of Life (June 30, 2026): What Breaks and How to Migrate</h1>
+  <p class="lede">Amazon Linux 2 stopped receiving standard security updates and bug fixes on June 30, 2026. This guide explains what actually breaks, lets you check your own build configuration in the browser, and walks through migrating to Amazon Linux 2023.</p>
 
   <div class="countdown" id="countdown" aria-label="Countdown to Amazon Linux 2 end of life">
     <div class="cd-unit"><div class="cd-num" id="cd-d">--</div><div class="cd-lab">Days</div></div>
@@ -135,10 +135,10 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
 
   <section id="meaning">
     <h2>What end of life actually means</h2>
-    <p>End of support (EOS) on June 30, 2026 is the date AWS stops shipping updates for Amazon Linux 2. Concretely:</p>
+    <p>End of support (EOS) on June 30, 2026 was the date AWS stopped shipping standard updates for Amazon Linux 2. Concretely:</p>
     <ul>
       <li><b>No more security patches.</b> The core repository stops receiving CVE fixes and bug fixes. Any new vulnerability discovered after that date goes unpatched on AL2.</li>
-      <li><b>AMI deprecation.</b> AWS deprecates the AL2-based Amazon ECS-optimized and Amazon EKS-optimized AMIs. Managed node groups and ECS capacity providers that still reference AL2 AMIs should be moved to AL2023 AMIs before the deadline.</li>
+      <li><b>AMI deprecation.</b> AWS deprecates the AL2-based Amazon ECS-optimized and Amazon EKS-optimized AMIs. Managed node groups and ECS capacity providers that still reference AL2 AMIs should be moved to AL2023 AMIs now.</li>
       <li><b>Existing instances keep running.</b> EOL does not shut anything down. Your running EC2 instances continue to operate, but they become progressively riskier to keep online because the OS is frozen at its last patch level.</li>
       <li><b>No in-place upgrade.</b> There is no supported command to convert an AL2 host into AL2023. Migration means launching or building fresh AL2023 images.</li>
     </ul>
@@ -176,27 +176,27 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
       <li><b>Pin a releasever.</b> Adopt the deterministic repository model so builds are reproducible instead of relying on a rolling latest.</li>
       <li><b>Update base images and AMIs.</b> Move container images to <code>amazonlinux:2023</code> and switch launch templates / node groups to AL2023 AMIs.</li>
       <li><b>Validate runtime assumptions.</b> Confirm cgroup v2, IMDSv2 token usage, chrony for time sync, and nftables-compatible firewall rules.</li>
-      <li><b>Test, then cut over.</b> Build the AL2023 image, run your full test suite, deploy to a canary, then roll out before June 30, 2026.</li>
+      <li><b>Test, then cut over.</b> Build the AL2023 image, run your full test suite, deploy to a canary, then roll out. AL2 has been past end of support since June 30, 2026, so every week on it is unpatched time.</li>
     </ol>
     <div class="card">
       <h3>Automate the inventory</h3>
-      <p>The open-source <a href="https://github.com/ntoledo319/EOLkits">EOLkits CLI</a> runs the same checks across an entire repository or image set, so you do not have to paste files one at a time.</p>
+      <p>The open-source <a href="https://github.com/ntoledo319/EOLkits/tree/main/kits/al2023-gate">al2023-gate CLI</a> from EOLkits finds AL2 EC2 instances, launch templates, EKS node groups and Elastic Beanstalk environments in the AWS regions you choose, remaps yum packages to dnf, and checks user data and Ansible playbooks for AL2023 breakage.</p>
     </div>
   </section>
 
   <section id="cta">
     <h2>Next steps</h2>
     <div class="cta-grid">
-      <a class="cta" href="https://github.com/ntoledo319/EOLkits"><b>Free open-source CLI</b><span>Scan repos and images for AL2 dependencies automatically.</span></a>
-      <a class="cta" href="https://eolkits.com/audit"><b>Migration audit</b><span>A done-for-you review of your AL2 footprint and migration plan.</span></a>
+      <a class="cta" href="https://github.com/ntoledo319/EOLkits/tree/main/kits/al2023-gate"><b>Free open-source CLI</b><span>Find AL2 instances, launch templates and node groups, and check user data and playbooks for AL2023 breakage.</span></a>
+      <a class="cta" href="https://toledotechnologies.com/end-of-life-migration/?from=al2"><b>Done-for-you migration</b><span>The studio behind EOLkits takes the AL2 cutover as a fixed-scope project: runtime, dependencies, tests, a staged deploy and a rollback plan. Scoped in writing. From US$7,500.</span></a>
       <a class="cta" href="https://eolkits.com/deprecations.ics"><b>Deadline calendar feed</b><span>Subscribe to an .ics feed of upcoming OS and runtime deprecations.</span></a>
     </div>
   </section>
 
   <section id="faq" class="faq">
     <h2>Frequently asked questions</h2>
-    <h3>When does Amazon Linux 2 reach end of life?</h3>
-    <p>June 30, 2026. After that date AWS no longer provides security updates, bug fixes, or new packages for Amazon Linux 2.</p>
+    <h3>When did Amazon Linux 2 reach end of life?</h3>
+    <p>June 30, 2026. Since that date AWS no longer provides standard security updates, bug fixes, or new packages for Amazon Linux 2.</p>
     <h3>What happens to my instances after the EOL date?</h3>
     <p>Running EC2 instances continue to operate, but they stop receiving patches. AWS also deprecates the AL2-based ECS-optimized and EKS-optimized AMIs, so managed compute should move to AL2023 AMIs.</p>
     <h3>Can I upgrade AL2 to AL2023 in place?</h3>
@@ -244,7 +244,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
     {id:'from2',sev:'bad',
       test:function(l){return /^\s*FROM\s+(public\.ecr\.aws\/amazonlinux\/)?amazonlinux:2(\s|$|@)/i.test(l) || /amazonlinux:2\.0/i.test(l);},
       title:'Base image FROM amazonlinux:2',
-      why:'This pins the container to the Amazon Linux 2 base image, which stops receiving security updates after June 30, 2026.',
+      why:'This pins the container to the Amazon Linux 2 base image, which stopped receiving standard security updates on June 30, 2026.',
       fix:'Change the base image tag to amazonlinux:2023.'},
     {id:'amzn2name',sev:'warn',
       test:function(l){return /amzn2(?!023)/i.test(l) || /\bamzn2-ami/i.test(l) || /amzn2\.0/i.test(l);},
@@ -279,7 +279,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0;color:var
     {id:'prettyname',sev:'bad',
       test:function(l){return /PRETTY_NAME\s*=\s*"Amazon Linux 2"\s*$/i.test(l) || /\bVERSION_ID\s*=\s*"?2"\s*$/i.test(l) || /\bVERSION_ID\s*=\s*2\s*$/i.test(l);},
       title:'os-release reports Amazon Linux 2',
-      why:'The /etc/os-release shows this host is running Amazon Linux 2, which goes end of life on June 30, 2026.',
+      why:'The /etc/os-release shows this host is running Amazon Linux 2, which reached end of support on June 30, 2026.',
       fix:'Rebuild or relaunch on Amazon Linux 2023 (PRETTY_NAME "Amazon Linux 2023").'}
   ];
 
